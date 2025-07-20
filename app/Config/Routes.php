@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\ReportsController;
 use CodeIgniter\Router\RouteCollection;
 
 /**
@@ -45,13 +46,22 @@ $routes->delete('contacts/(:segment)', 'ContactController::delete/$1');
 
 // Rutas de Item
 // vistas
-$routes->get('items', 'ItemController::index');
-$routes->get('items/new', 'ItemController::new');
-$routes->get('items/(:segment)', 'ItemController::show/$1');
+$routes->get('services', 'Items\ServiceController::index');
+$routes->get('services/new', 'Items\ServiceController::new');
+$routes->get('services/(:segment)', 'Items\ServiceController::show/$1');
 // otras
-$routes->post('items', 'ItemController::create');
-$routes->put('items/(:segment)', 'ItemController::update/$1');
-$routes->delete('items/(:segment)', 'ItemController::delete/$1');
+$routes->post('services', 'Items\ServiceController::create');
+$routes->put('services/(:segment)', 'Items\ServiceController::update/$1');
+$routes->delete('services/(:segment)', 'Items\ServiceController::delete/$1');
+
+$routes->get('products', 'Items\ProductController::index');
+$routes->get('products/new', 'Items\ProductController::new');
+$routes->get('products/(:segment)', 'Items\ProductController::show/$1');
+// otras
+$routes->post('products', 'Items\ProductController::create');
+$routes->put('products/(:segment)', 'Items\ProductController::update/$1');
+$routes->delete('products/(:segment)', 'Items\ProductController::delete/$1');
+
 
 // Rutas de Category
 // vistas
@@ -63,6 +73,7 @@ $routes->post('categories', 'CategoryController::create');
 $routes->put('categories/(:segment)', 'CategoryController::update/$1');
 $routes->delete('categories/(:segment)', 'CategoryController::delete/$1');
 
+
 // Rutas de Transaction
 // vistas
 $routes->get('transactions', 'TransactionController::index');
@@ -71,5 +82,7 @@ $routes->get('transactions/(:segment)', 'TransactionController::show/$1');
 // otras
 $routes->post('transactions', 'TransactionController::create');
 $routes->put('transactions/(:segment)', 'TransactionController::update/$1');
+
+$routes->get('api/reports', 'ReportsController::index');
 
 $routes->get('/example', 'ExampleController::index');

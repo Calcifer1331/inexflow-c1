@@ -1,14 +1,14 @@
 // abrir cualquier dialogo
 function openDialog(element, event, dataset) {
     event.preventDefault()
-    
+
     const headings = document.querySelectorAll('dialog h5');
     const type = document.querySelector('input[name="type"]:checked');
     headings.forEach(heading => {
         heading.innerHTML = type ? 'Elige un registro (Haz click en una fila)' : 'Selecciona el Tipo de Transacción primero';
     });
 
-    document.querySelector(`dialog.${dataset}`).showModal(); 
+    document.querySelector(`dialog.${dataset}`).showModal();
 }
 // mostrar tablas de todos los dialogos segun el tipo de transacción
 const typeRadios = document.querySelectorAll('input[name="type"]');
@@ -17,20 +17,25 @@ typeRadios.forEach(radio => {
     radio.addEventListener('change', () => {
         tables.forEach(table => {
             table.style.display = radio.value === table.classList[0]
-            ? 'table' : 'none';
+                ? 'table' : 'none';
         })
         typeRadios.forEach(radio => radio.disabled = true);
     })
 });
+
 // pasar datos de las tablas en el dialogo de contactos al input de contactos
-const contactsTables = document.querySelectorAll('dialog.contacts table');
+/**
+ * @type HTMLDialogElement
+ */
+const contactDialog = document.querySelector('dialog.contacts') //!!CUIDAO
+const contactsTables = contactDialog.querySelectorAll('table');
 contactsTables.forEach(table => {
     const tbody = table.children[2].children;
     for (const row of tbody) {
         row.addEventListener('click', () => {
             const contactInput = document.querySelector('form input.contact');
             const contactIdInput = document.querySelector('form input[name="contact_id"]');
-            
+
             const cells = {
                 name: row.children[1].innerHTML,
                 address: row.children[4].innerHTML
@@ -39,12 +44,17 @@ contactsTables.forEach(table => {
 
             contactInput.value = `${cells.name} | ${cells.address}`;
             contactIdInput.value = contactId;
+            contactDialog.close();
         })
     }
 });
 // crear fila en tabla de registros con datos de las tablas de items
+/**
+ * @type HTMLDialogElement
+ */
+const itemsDialog = document.querySelector('dialog.items') //!!CUIDAO
 const formTableTbody = document.querySelector('form table tbody');
-const itemsTables = document.querySelectorAll('dialog.items table');
+const itemsTables = itemsDialog.querySelectorAll('table');
 itemsTables.forEach(table => {
     const tbody = table.children[2].children;
     for (const row of tbody) {
@@ -52,6 +62,8 @@ itemsTables.forEach(table => {
         row.addEventListener('click', () => {
             const recordIndex = formTableTbody.children.length;
             const amount = row.children[4].innerHTML;
+            console.log("row.children[4].innerHTML: ", row.children[4].innerHTML);
+
             const transactionType = document.querySelector('input[name="type"]:checked').value;
 
             const inputs = {
@@ -85,7 +97,7 @@ itemsTables.forEach(table => {
                 inputs.amount.addEventListener('change', () => {
                     const recordRow = inputs.amount.parentElement.parentElement;
                     const moneyCell = document.querySelector(`dialog table.${transactionType} tbody ` +
-                        `tr[data-index="${recordRow.dataset.index}"] td.money`); 
+                        `tr[data-index="${recordRow.dataset.index}"] td.money`);
                     const money = parseFloat(moneyCell.innerHTML.replace('$', '')).toFixed(2);
 
                     inputs.subtotal.value = (parseInt(inputs.amount.value) * money).toFixed(2);
@@ -102,7 +114,7 @@ itemsTables.forEach(table => {
                 category: row.children[1],
                 description: row.children[2],
             }
-            
+
             // colocar elementos en la nueva fila en la tabla de registros
             const recordRow = document.createElement('tr');
             recordRow.dataset.index = row.dataset.index;
@@ -136,8 +148,8 @@ itemsTables.forEach(table => {
                 </svg>`;
             removeButton.addEventListener('click', () => {
                 const recordRow = removeButton.parentElement.parentElement;
-                const hiddenRow = document.querySelector(`dialog table.${transactionType} tbody `+
-                    `tr[data-index="${recordRow.dataset.index}"]`); 
+                const hiddenRow = document.querySelector(`dialog table.${transactionType} tbody ` +
+                    `tr[data-index="${recordRow.dataset.index}"]`);
                 hiddenRow.style.display = 'table-row';
                 recordRow.remove();
                 calculateTotal();
@@ -146,6 +158,7 @@ itemsTables.forEach(table => {
             recordRow.append(removeCell);
             formTableTbody.append(recordRow);
             row.style.display = 'none';
+            itemsDialog.close();
         })
     }
 });

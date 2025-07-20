@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Items;
 
 use App\Controllers\BaseController;
 use App\Entities\Item;
@@ -8,14 +8,19 @@ use App\Models\{ItemModel, CategoryModel};
 use App\Validation\ItemValidator;
 use Ramsey\Uuid\Uuid;
 
-class ItemController extends BaseController
+abstract class ItemController extends BaseController
 {
-  protected $model;
+  protected ItemModel $model;
   protected $formValidator;
-  protected $categoryModel;
+  protected CategoryModel $categoryModel;
 
-  public function __construct()
+  protected bool $isProducts;
+  protected string $currentPage;
+
+  public function __construct(bool $isProducts)
   {
+    $this->isProducts = $isProducts;
+    $this->currentPage = $isProducts ? "products" : "services";
     $this->model = new ItemModel();
     $this->formValidator = new ItemValidator();
     $this->categoryModel = new CategoryModel();
@@ -27,11 +32,13 @@ class ItemController extends BaseController
     if (!session()->get('business_id')) return redirect()->to('business/new');
     $redirect = check_user('businessman');
     if ($redirect !== null) return redirect()->to($redirect);
-    else session()->set('current_page', 'items');
+    else session()->set('current_page', $this->currentPage);
+    $type = $this->isProducts ? "product" : "service";
 
     $data = [
-      'title' => 'Items',
-      'items' => $this->model->findAllWithCategory(session()->get('business_id')),
+      'title' => $this->isProducts ? "Productos" : "Servicios",
+      'currentPage' => $this->currentPage,
+      'items' => $this->model->findAllWithCategoryAndType(session()->get('business_id'), ($type)),
     ];
     return view('Item/index', $data);
   }
@@ -42,13 +49,13 @@ class ItemController extends BaseController
     $redirect = check_user('businessman');
     if ($redirect !== null) return redirect()->to($redirect);
     else session()->set('current_page', 'items/new');
-    
+
     $data = [
       'title' => 'Nuevo Item',
       'categories' => $this->categoryModel->findAllByBusiness(session()->get('business_id')),
     ];
     return view('Item/new', $data);
-  } 
+  }
 
   public function show($id = null)
   {
@@ -83,7 +90,7 @@ class ItemController extends BaseController
   public function update($id = null)
   {
     if (!$this->validate($this->formValidator->update)) {
-      return redirect()->back()->withInput(); 
+      return redirect()->back()->withInput();
     }
 
     $post = $this->request->getPost();
@@ -100,9 +107,9 @@ class ItemController extends BaseController
   public function delete($id = null)
   {
     if ($this->model->delete(uuid_to_bytes($id))) {
-      return redirect()->to('items')->with('success', 'Item eliminado exitosamente.');
+      return redirect()->to($this->currentPage)->with('success', 'Elemento eliminado exitosamente.');
     } else {
-      return redirect()->to('items')->with('error', 'No se pudo eliminar el item.');
+      return redirect()->to($this->currentPage)->with('error', 'No se pudo eliminar el elemento.');
     }
   }
 }
