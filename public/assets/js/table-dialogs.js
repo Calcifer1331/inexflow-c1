@@ -28,7 +28,8 @@ typeRadios.forEach(radio => {
  * @type HTMLDialogElement
  */
 const contactDialog = document.querySelector('dialog.contacts') //!!CUIDAO
-const contactsTables = contactDialog.querySelectorAll('table');
+const contactsTables = document.querySelectorAll('dialog.contacts table');
+
 contactsTables.forEach(table => {
     const tbody = table.children[2].children;
     for (const row of tbody) {
@@ -54,7 +55,8 @@ contactsTables.forEach(table => {
  */
 const itemsDialog = document.querySelector('dialog.items') //!!CUIDAO
 const formTableTbody = document.querySelector('form table tbody');
-const itemsTables = itemsDialog.querySelectorAll('table');
+const itemsTables = document.querySelectorAll('dialog.items table');
+
 itemsTables.forEach(table => {
     const tbody = table.children[2].children;
     for (const row of tbody) {

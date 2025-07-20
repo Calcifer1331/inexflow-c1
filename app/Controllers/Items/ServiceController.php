@@ -8,6 +8,6 @@ class ServiceController extends ItemController
 {
     public function __construct()
     {
-        parent::__construct(false);
+        parent::__construct(false, 'services', 'service');
     }
 }

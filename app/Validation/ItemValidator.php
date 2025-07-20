@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Validation;
 
 /**
  * Son reglas de validación y mensajes de error utilizados en los formularios de App\Views\Item
  */
-class ItemValidator {
+class ItemValidator
+{
     public $create = [
         'name' => [
             'rules' => 'required',
@@ -12,12 +14,12 @@ class ItemValidator {
                 'required' => 'El nombre es requerido',
             ],
         ],
-        'type' => [
-            'rules' => 'required',
-            'errors' => [
-                'required' => 'El tipo es requerido',
-            ],
-        ],
+        // 'type' => [
+        //     'rules' => 'required',
+        //     'errors' => [
+        //         'required' => 'El tipo es requerido',
+        //     ],
+        // ],
         'category_id' => [
             'rules' => 'required',
             'errors' => [

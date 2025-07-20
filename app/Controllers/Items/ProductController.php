@@ -10,6 +10,6 @@ class ProductController extends ItemController
 {
     public function __construct()
     {
-        parent::__construct(true);
+        parent::__construct(true, 'products', 'product');
     }
 }

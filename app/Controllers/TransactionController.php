@@ -18,7 +18,7 @@ class TransactionController extends BaseController
   protected $itemModel;
   protected $contactModel;
 
-  public function __construct() 
+  public function __construct()
   {
     $this->model = new TransactionModel();
     $this->formValidator = new TransactionValidator();
@@ -27,7 +27,7 @@ class TransactionController extends BaseController
     $this->itemModel = new ItemModel();
     $this->contactModel = new ContactModel();
   }
-  
+
   // vistas
   public function index()
   {
@@ -49,24 +49,24 @@ class TransactionController extends BaseController
     $redirect = check_user('businessman');
     if ($redirect !== null) return redirect()->to($redirect);
     else session()->set('current_page', 'transactions/new');
-    
+
     $items = $this->itemModel->findAllWithCategory(session()->get('business_id'));
-    $items = (function($array) {
+
+    $items = (function ($array) {
       $income = [];
       $expense = [];
-      
+
       foreach ($array as $item) {
         if ($item->category_type === 'income') array_push($income, $item);
         else array_push($expense, $item);
       }
-
       return (object) ['income' => $income, 'expense' => $expense];
     })($items);
     $contacts = $this->contactModel->findAllByBusiness(session()->get('business_id'));
-    $contacts = (function($array) {
+    $contacts = (function ($array) {
       $customer = [];
       $provider = [];
-      
+
       foreach ($array as $contact) {
         if ($contact->type === 'customer') array_push($customer, $contact);
         else array_push($provider, $contact);
@@ -74,11 +74,11 @@ class TransactionController extends BaseController
 
       return (object) ['customer' => $customer, 'provider' => $provider];
     })($contacts);
-    
+
     $data = [
       'title' => 'Nueva Transacción',
-      'items' => $items,  
-      'contacts' => $contacts  
+      'items' => $items,
+      'contacts' => $contacts
     ];
     return view('Transaction/new', $data);
   }
@@ -106,19 +106,21 @@ class TransactionController extends BaseController
   // acciones
   public function create()
   {
-    if (!$this->validate($this->formValidator->create) ||
-      !$this->validate($this->recordValidator->create)) {
+    if (
+      !$this->validate($this->formValidator->create) ||
+      !$this->validate($this->recordValidator->create)
+    ) {
       return redirect()->back()->withInput();
     }
 
     $post = $this->request->getPost();
-    
+
     $post['id'] = Uuid::uuid4();
     $post['business_id'] = uuid_to_bytes(session()->get('business_id'));
     $post['contact_id'] = ($post['contact_id']) ? uuid_to_bytes($post['contact_id']) : null;
     $post['number'] = strval(Time::now()->timestamp);
     $post['due_date'] = date('Y-m-d', new Time($post['due_date'])->timestamp);
-    
+
     $records = [];
     foreach ($post['records'] as $record) {
       $record['transaction_id'] = $post['id'];
@@ -134,7 +136,7 @@ class TransactionController extends BaseController
   public function update($id = null)
   {
     if (!$this->validate($this->formValidator->update)) {
-      return redirect()->back()->withInput(); 
+      return redirect()->back()->withInput();
     }
 
     $post = $this->request->getPost();

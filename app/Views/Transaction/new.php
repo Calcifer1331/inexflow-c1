@@ -143,7 +143,7 @@
             <td class="category"><?= $items->expense[$i]->category_name ?></td>
             <td class="description"><?= $items->expense[$i]->name ?></td>
             <td><?= $items->expense[$i]->displayType() ?></td>
-            <td class="amount"><?= $items->expense[$i]->displayProperty('current_stock') ?></td>
+            <td class="amount"><?= $items->expense[$i]->displayProperty('stock') ?></td>
             <td class="money"><?= $items->expense[$i]->displayMoney('cost') ?></td>
           </tr>
         <?php endfor; ?>
